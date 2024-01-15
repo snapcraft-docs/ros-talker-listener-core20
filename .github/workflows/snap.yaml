@@ -50,11 +50,20 @@ jobs:
                             exit 1
                         fi
                     }
-
+                    
+                    echo "sourcing"
                     source /opt/ros/noetic/setup.bash
-
+                    
+                    echo $ROS_PACKAGE_PATH
+                    echo "starting ros core"
                     roscore &
                     pid=$!
+
+                    sleep 5
+
+                    rosnode list
+
+                    echo "I run rosnode"
                     #  & ros-talker-listener &
                     # pid=$!
                     # rosnode list | grep -q "/talker"
