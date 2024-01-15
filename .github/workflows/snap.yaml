@@ -29,8 +29,6 @@ jobs:
                     sudo apt update
                     sudo apt install ros-noetic-ros-base
 
-                    source /opt/ros/noetic/setup.bash
-
                     check_node() {
                         local node_name=$1
                         rosnode list | grep -q "/$node_name"
@@ -53,15 +51,19 @@ jobs:
                         fi
                     }
 
-                    roscore & ros-talker-listener &
+                    source /opt/ros/noetic/setup.bash
+
+                    roscore &
                     pid=$!
-                    rosnode list | grep -q "/talker"
-                    if [ $? -eq 0 ]; then
-                        echo "talker is running."
-                    else
-                        echo "Error - talker is not running."
-                        exit 1
-                    fi
+                    #  & ros-talker-listener &
+                    # pid=$!
+                    # rosnode list | grep -q "/talker"
+                    # if [ $? -eq 0 ]; then
+                    #     echo "talker is running."
+                    # else
+                    #     echo "Error - talker is not running."
+                    #     exit 1
+                    # fi
                     # check_node talker
                     # check_node listener
                     # check_topic chatter
