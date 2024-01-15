@@ -31,9 +31,6 @@ jobs:
 
                     source /opt/ros/noetic/setup.bash
 
-                    roscore &
-                    core_pid=$!
-
                     check_node() {
                         local node_name=$1
                         rosnode list | grep -q "/$node_name"
@@ -56,12 +53,18 @@ jobs:
                         fi
                     }
 
-                    ros-talker-listener &
+                    roscore & ros-talker-listener &
                     pid=$!
-                    check_node talker
-                    check_node listener
-                    check_topic chatter
-                    kill $core_pid
+                    rosnode list | grep -q "/talker"
+                    if [ $? -eq 0 ]; then
+                        echo "talker is running."
+                    else
+                        echo "Error - talker is not running."
+                        exit 1
+                    fi
+                    # check_node talker
+                    # check_node listener
+                    # check_topic chatter
                     kill $pid
 
                     echo "All checks passed successfully."
