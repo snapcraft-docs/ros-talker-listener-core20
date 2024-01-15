@@ -56,6 +56,9 @@ jobs:
 
                     ros-talker-listener &
                     pid=$!
+
+                    sleep 2
+
                     check_node talker
                     check_node listener
                     check_topic chatter talker listener
