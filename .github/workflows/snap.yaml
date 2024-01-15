@@ -51,31 +51,19 @@ jobs:
                         fi
                     }
                     
-                    echo "sourcing"
                     source /opt/ros/noetic/setup.bash
                     
-                    echo $ROS_PACKAGE_PATH
-                    echo "starting ros core"
                     roscore &
+                    core_pid=$!
+
+                    sleep 10
+
+                    ros-talker-listener &
                     pid=$!
-
-                    sleep 5
-
-                    rosnode list
-
-                    echo "I run rosnode"
-                    #  & ros-talker-listener &
-                    # pid=$!
-                    # rosnode list | grep -q "/talker"
-                    # if [ $? -eq 0 ]; then
-                    #     echo "talker is running."
-                    # else
-                    #     echo "Error - talker is not running."
-                    #     exit 1
-                    # fi
-                    # check_node talker
-                    # check_node listener
-                    # check_topic chatter
+                    check_node talker
+                    check_node listener
+                    check_topic chatter
                     kill $pid
+                    kill $core_pid
 
                     echo "All checks passed successfully."
