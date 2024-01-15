@@ -53,11 +53,14 @@ jobs:
                         fi
                     }
 
+                    roscore &
+                    core_pid=$!
                     ros-talker-listener &
                     pid=$!
                     check_node talker
                     check_node listener
                     check_topic chatter
+                    kill $core_pid
                     kill $pid
 
                     echo "All checks passed successfully."
