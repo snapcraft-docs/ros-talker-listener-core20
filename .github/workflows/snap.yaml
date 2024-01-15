@@ -41,35 +41,27 @@ jobs:
                     }
                     check_topic() {
                         local topic_name=$1
-                        local pub_count=$(rostopic info /$topic_name | grep "Publisher count:" | awk '{print $3}')
-                        local sub_count=$(rostopic info /$topic_name | grep "Subscription count:" | awk '{print $3}')
-                        if [ "$pub_count" -gt 0 ] && [ "$sub_count" -gt 0 ]; then
-                            echo "$topic_name has publishers and subscribers."
+                        local pub_name=$2
+                        local sub_name=$3
+                        rostopic info /$topic_name | grep -E "$pub_name|$sub_name"
+                        if [ $? -eq 0 ]; then
+                            echo "$$topic_name has publisher $pub_name and subscriber $sub_name."
                         else
-                            echo "Error - $topic_name has no publishers or subscribers."
+                            echo "Error - $topic_name does not have pub/sub"
                             exit 1
                         fi
                     }
-                    
+
                     source /opt/ros/noetic/setup.bash
-                    
-                    roscore &
-                    core_pid=$!
 
-                    sleep 10
+                    ros-talker-listener &
+                    pid=$!
 
-                    #ros-talker-listener &
-                    #pid=$!
-                    rosnode list | grep -q "/talker"
-                    if [ $? -eq 0 ]; then
-                        echo "talker is running."
-                    else
-                        echo "Error - talker is not running."
-                        exit 1
-                    fi
-                    #check_node talker
-                    ##check_node listener
-                    #check_topic chatter
-                    kill $core_pid
+                    sleep 5
+
+                    check_node talker
+                    check_node listener
+                    check_topic chatter talker listener
+                    kill $pid
 
                     echo "All checks passed successfully."
